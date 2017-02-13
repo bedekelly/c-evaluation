@@ -11,7 +11,7 @@
  * the most recently added (i.e. innermost) variables take precedence.
  */
 struct env {
-  char name[MAX_NAME_LENGTH];
+  char *name;
   int value;
   struct env *next;
 };
@@ -34,7 +34,7 @@ envAdd(char *name, size_t namec, int value, struct env *env) {
     fprintf(stderr, "Variable name too long.");
     return NULL;
   }
-  strncpy(result->name, name, namec);
+  result->name = strndup(name, namec);
   result->value = value;
   result->next = env;
   return result;
@@ -71,6 +71,7 @@ struct env *envMake() {
  */
 struct env *envPop(struct env *env) {
   struct env *result = env->next;
+  free(env->name);
   free(env);
   return result;
 }
